@@ -26,8 +26,12 @@ compileLine(line):
 
 */
 
+#include "arm211_compiler.h"
 
 int main(int argc, char** argv) {
+	for (int filenum = 1; filenum < argc; filenum++) {
+		assembleProgram(argv[i]);
+	}
 	return 0;
 }
 
