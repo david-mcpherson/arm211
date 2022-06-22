@@ -10,6 +10,8 @@
 /* ".arm211\0" has 8 characters*/
 #define EXTENSION_LENGTH 8
 
+/* The longest posible instruction is "BEQ <label>; and we assume that <label> has a reasonable length. */
+#define MAX_INSTRUC_LENGTH 40 
 
 /*
  * Assembly to binary converter.
@@ -24,21 +26,35 @@ char* assemblyToBinary(char* instruction) {
 }
 
 
+/*
+ * Add the ".arm211" extension to a filename.
+ * Removes any existing extensions.
+ */
 void setExtension(char* filename, int n) {
-	int current_letter;
-	for(current_letter = 0; current_letter < n && filename[current_letter] != '.'; current_letter++);
-	// once the for loop is finished, current_letter is the index where we need to write the extension ".arm211\0"	
+	int target_letter;
+	for (target_letter = 0; target_letter < n && filename[target_letter] != '.'; target_letter++);
+	strcpy(filename + target_letter, ".arm211\0");
 }
 
-void assembleProgram(char* filename) {
-	// open filename in read mode
-	// open filename.arm211 in write mode
-	FILE* assembly_file = fopen(filename, "r");
 
+/*
+ * Takes a filename for a CPEN 211 assembly file and creates the corresponding
+ * machine code, outputting it to a .arm211 file.
+ */
+void assembleProgram(char* filename) {
+	/* We need to create a string to store the output filename. */
 	const int n = strlen(filename);	
 	char* arm211_program = malloc(n + EXTENSION_LENGTH);
 	strncpy(arm212_program, filename, n);	
-
-
+	
+	/* This function reads from the input file, and outputs to an output file */
+	FILE* input_file = fopen(filename, "r");
+	FILE* output_file = fopen(arm211_program, "w"); 
 	free(arm211_program);
+	
+	/* Iterate through input_file, one line at a time.
+		With each line, we compile it to CPEN 211 binary,
+		and write it to output_file.
+	 */		
+
 }
