@@ -1,13 +1,15 @@
 /*
-Compiler for CPEN 211 ISA (a subset of ARMv7)
+<<<<<<< HEAD
+Compiles one or more files written in CPEN 211 ISA (simplified ARMv7)
 
 This program takes assembly files as arguments and creates machine code files
 in the format of the CPEN 211 ISA.
 
 author: 		david-mcpherson
 created: 		20-June-2022
-last updated:	20-June-2022
+last updated:	25-June-2022
 */
+
 
 /* PSEUDOCODE:
 main:
@@ -22,16 +24,14 @@ compileLine(line):
 		get the first five bits of the instruction
 		get the last 11 bits from a helper function
 
-
-
-*/
+ */
 
 #include "arm211_compiler.h"
 
+
 int main(int argc, char** argv) {
-	for (int filenum = 1; filenum < argc; filenum++) {
-		assembleProgram(argv[i]);
+	for(int program_num = 0; program_num < argc; program_num++) {
+		assembleProgram(argv[program_num];
 	}
 	return 0;
 }
-
