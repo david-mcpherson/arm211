@@ -5,13 +5,12 @@
  * Created: 2022-06-21
  */
 
+
 #include <stdio.h>
 
-/* ".arm211\0" has 8 characters*/
-#define EXTENSION_LENGTH 8
-
-/* The longest posible instruction is "BEQ <label>; and we assume that <label> has a reasonable length. */
-#define MAX_INSTRUC_LENGTH 40 
+#define EXTENSION_LENGTH 	8
+#define MAX_INSTRUC_LENGTH 	40 
+#define BINARY_LENGTH		16
 
 /*
  * Assembly to binary converter.
@@ -21,7 +20,7 @@
  * 
  * The caller must call free on the returned string.
  */
-char* assemblyToBinary(char* instruction) {
+void assembleInstruction(char* binary, char* assembly) {
 	// turn the instruction into machine code
 }
 
@@ -51,10 +50,40 @@ void assembleProgram(char* filename) {
 	FILE* input_file = fopen(filename, "r");
 	FILE* output_file = fopen(arm211_program, "w"); 
 	free(arm211_program);
-	
-	/* Iterate through input_file, one line at a time.
-		With each line, we compile it to CPEN 211 binary,
-		and write it to output_file.
-	 */		
 
+	char next_letter;
+	int status_code = (int)'a';
+	int line_num = 0;
+
+	/* Read input_file one line at a time */	
+	while ((next_letter) = (char)fgetc(input_file) != EOF) {
+		char next_instruction[MAX_INSTRUC_LENGTH + 1];
+		char binary_instruction[BINARY_LENGTH];
+		int letter_num = 0;
+		line_num++;
+
+		/* Fetch the next instruction one letter at a time */
+		while ((next_letter) = (char)fgetc(input_file) != '\0' && next_letter != EOF && letter_num < MAX_INSTRUC_LENGTH) {
+			next_instrucion[letter_num++] = next_letter;
+		}
+
+		/* Throw an error if one of the lines was too long */
+		if (letter_num == MAX_INSTRUC_LENGTH) {
+			fprintf(stderr, "ERROR: Instruction at line %d is too long!", line_num);
+			fclose(input_file);
+			fclose(output_file);
+			return;
+		}
+	
+		/* Assemble the next instruction */	
+		next_instruction[letter_num] = '\0';
+		assembleInstruction(binary_instruction, next_instruction);
+		
+		/* Write the instruction to the output file) */
+		fprintf(output_file, binary_instruction);
+	}
+
+	/* We're now done assembling, and just need to close the file streams. */
+	fclose(input_file);
+	fclose(output_file);
 }
