@@ -1,8 +1,5 @@
 # CPEN 211 ISA
 
-
- CPEN 211 RISC ISA
-
 | Instruction                        |   OPCODE  |   OP  |   [10:8]  |   [7:0]                       |   Operation description
 |------------------------------------|-----------|-------|-----------|-------------------------------|--------------------------------
 |MOV Rn, #<8-bit immediate>          |   110     |   10  |   Rn      |   #<8-bit immediate>          |   Rn = #<8-bit immediate>
