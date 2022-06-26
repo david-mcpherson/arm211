@@ -15,35 +15,10 @@
 #define ALL_ZERO			"0000000000000000"
 #define ASCII_LETTER_PREFIX	96
 #define ASCII_LETTER_ID		31
+#define ALPHABET_LENGTH		26
 
-/*
- * Formats an instruction to make it easier to parse.
- * --------------------------------------------------
- * Sets all letters to upper-case, 
- */
-void normalizeInstruction(char* s) {
-	char* next_char = s;
-	while (*next_char) {
-		/* If if next_letter is a lowercase letter then make it uppercase */
-		if (next_char & ASCII_LETTER_PREFIX && next_char & ASCII_LETTER_ID <= 26)		
-			*next_char = toupper(*next_char);
-
-		/* TODO: strip all spaces after the first space */
-		next_char++;
-	}
-}
-
-
-/*
- * Adds the ".arm211" extension to a filename.
- * Removes any existing extensions.
- */
-void setExtension(char* filename, int n) {
-	int target_letter;
-	for (target_letter = 0; target_letter < n && filename[target_letter] != '.'; target_letter++);
-	strcpy(filename + target_letter, ".arm211\0");
-}
-
+// TODO: store current address
+// TODO: map a list of labels to addresses
 
 /*
  * Assembly to binary converter.
@@ -79,13 +54,20 @@ void assembleInstruction(char* binary, char* assembly, int* error_number) {
 			case (int)'L' * 26 + (int)'T':	strncpy(binary+5, "011", 3); break; 	// BLT	
 			case (int)'L' * 26 + (int)'E':	strncpy(binary+5, "100", 3); break; 	// BLE	
 			default: *error_number = 1; return;
-		}	
+		}
+		// TODO: binary[7:0] = label_map.get(label_name)	
 	} else if (assembly[0] == 'M' && assembly[1] == 'O' && assembly[2] == 'V') {	// MOV 
 		strncpy(binary, "110", 3);
-		// TODO: implement MOV instructions
-	} else if (assembly[0] == 'L' && assembly[1] == 'D' && assembly[2] == 'R'
+		
+		/* Need to check whether the instruction is MOV_IMM or MOV_REG*/
+		// if (toks[2][0] == 'R')
+	} else if (assembly[0] == 'L' && assembly[1] == 'D' && assembly[2] == 'R'		// LDR/STR
 			|| assembly[0] == 'S' && assembly[1] == 'T' && assembly[2] == 'R') {
-		// TODO: implement LDR/STR instructions
+		strncpy(binary, (assembly[0] == 'L') ? "011" : "100", 3);
+		// TODO: binary[10:8] = Rn
+		// TODO: binary[7:0] = Rd + #<5-bit immediate>
+	} else if (assembly[-1] == ':') {						// CREATE LABEL
+		// check whether the label exists 
 	} else {	
 		/* ParseError: No instruction found. */
 		*error_number = 1;
