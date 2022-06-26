@@ -7,10 +7,43 @@
 
 
 #include <stdio.h>
+#include <ctype.h>
 
 #define EXTENSION_LENGTH 	8
 #define MAX_INSTRUC_LENGTH 	40 
-#define BINARY_LENGTH		16
+#define INSTUCTION_LENGTH	16
+#define ALL_ZERO			"0000000000000000"
+#define ASCII_LETTER_PREFIX	96
+#define ASCII_LETTER_ID		31
+
+/*
+ * Formats an instruction to make it easier to parse.
+ * --------------------------------------------------
+ * Sets all letters to upper-case, 
+ */
+void normalizeInstruction(char* s) {
+	char* next_char = s;
+	while (*next_char) {
+		/* If if next_letter is a lowercase letter then make it uppercase */
+		if (next_char & ASCII_LETTER_PREFIX && next_char & ASCII_LETTER_ID <= 26)		
+			*next_char = toupper(*next_char);
+
+		/* TODO: strip all spaces after the first space */
+		next_char++;
+	}
+}
+
+
+/*
+ * Adds the ".arm211" extension to a filename.
+ * Removes any existing extensions.
+ */
+void setExtension(char* filename, int n) {
+	int target_letter;
+	for (target_letter = 0; target_letter < n && filename[target_letter] != '.'; target_letter++);
+	strcpy(filename + target_letter, ".arm211\0");
+}
+
 
 /*
  * Assembly to binary converter.
@@ -18,21 +51,45 @@
  * This function turns an ARM211 instruction into a string
  * of 0's and 1's in the CPEN 211 ISA format.
  * 
- * The caller must call free on the returned string.
+ * If there's a parse error, then error_number will be set to 1.
  */
-void assembleInstruction(char* binary, char* assembly) {
-	// turn the instruction into machine code
-}
+void assembleInstruction(char* binary, char* assembly, int* error_number) {
+	normalizeInstruction(assembly);
+	strncpy(binary, ALL_ZERO, INSTRUCTION_LENGTH);
 
+	// 2. If first letter is B then call branch helper
+	// 3. If MOV then call helper
+	// 4. IF ADD or CMP or AND or MVN then call ALU helper
+	// 5. if LDR or STR call MEM helper
+	// 6. Throw ParseError 
 
-/*
- * Add the ".arm211" extension to a filename.
- * Removes any existing extensions.
- */
-void setExtension(char* filename, int n) {
-	int target_letter;
-	for (target_letter = 0; target_letter < n && filename[target_letter] != '.'; target_letter++);
-	strcpy(filename + target_letter, ".arm211\0");
+	if (!strncmp(assembly, "HALT", 4)) {
+		strncpy(binary, "111", 3);	
+	} else if (assembly[0] == 'B') {	// BRANCH 
+		strncpy(binary, "001", 3);
+
+		/* Unconditional branch */		
+		if (binary[1] == ' ')
+			strncpy(binary+5, "000", 3);
+	
+		/* Conditional branches */
+		else switch((int)assembly[1] * 26 + (int)assembly[2]) {
+			case (int)'E' * 26 + (int)'Q':	strncpy(binary+5, "001", 3); break; 	// BEQ	
+			case (int)'N' * 26 + (int)'E':	strncpy(binary+5, "010", 3); break; 	// BNE	
+			case (int)'L' * 26 + (int)'T':	strncpy(binary+5, "011", 3); break; 	// BLT	
+			case (int)'L' * 26 + (int)'E':	strncpy(binary+5, "100", 3); break; 	// BLE	
+			default: *error_number = 1; return;
+		}	
+	} else if (assembly[0] == 'M' && assembly[1] == 'O' && assembly[2] == 'V') {	// MOV 
+		strncpy(binary, "110", 3);
+		// TODO: implement MOV instructions
+	} else if (assembly[0] == 'L' && assembly[1] == 'D' && assembly[2] == 'R'
+			|| assembly[0] == 'S' && assembly[1] == 'T' && assembly[2] == 'R') {
+		// TODO: implement LDR/STR instructions
+	} else {	
+		/* ParseError: No instruction found. */
+		*error_number = 1;
+	}
 }
 
 
@@ -52,7 +109,7 @@ void assembleProgram(char* filename) {
 	free(arm211_program);
 
 	char next_letter;
-	int status_code = (int)'a';
+	int fail = 0;
 	int line_num = 0;
 
 	/* Read input_file one line at a time */	
@@ -63,27 +120,33 @@ void assembleProgram(char* filename) {
 		line_num++;
 
 		/* Fetch the next instruction one letter at a time */
-		while ((next_letter) = (char)fgetc(input_file) != '\0' && next_letter != EOF && letter_num < MAX_INSTRUC_LENGTH) {
+		while ((next_letter) = (char)fgetc(input_file) != '\0' 
+					&& next_letter != EOF 
+					&& letter_num < MAX_INSTRUC_LENGTH) {
 			next_instrucion[letter_num++] = next_letter;
 		}
 
 		/* Throw an error if one of the lines was too long */
 		if (letter_num == MAX_INSTRUC_LENGTH) {
-			fprintf(stderr, "ERROR: Instruction at line %d is too long!", line_num);
-			fclose(input_file);
-			fclose(output_file);
-			return;
+			fprintf(stderr, "ERROR: Instruction at line %d is too long!\n", line_num);
+			break;
 		}
 	
 		/* Assemble the next instruction */	
 		next_instruction[letter_num] = '\0';
-		assembleInstruction(binary_instruction, next_instruction);
+		assembleInstruction(binary_instruction, next_instruction, &fail);
 		
+		/* Throw an error if parsing failed */
+		if (fail) {
+			fprintf(stderr, "ERROR: Instruction at line %d cannot be parsed!\n", line_num);
+			break;
+		}
+			
 		/* Write the instruction to the output file) */
 		fprintf(output_file, binary_instruction);
 	}
 
-	/* We're now done assembling, and just need to close the file streams. */
+	/* Close the file streams. */
 	fclose(input_file);
 	fclose(output_file);
 }
