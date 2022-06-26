@@ -18,3 +18,13 @@
 |BLE <label>                         |   001     |   xx  |   100     |   #<8-bit address>            |   ++PC += (N^V | Z) ? #<8-bit immediate> : 0;
 
 
+
+## Project status
+Nothing has been tested yet.
+Function should be tested in the following order:
+	1. toUpper
+	2. setExtension
+	3. assembleInstruction
+	4. assembleProgram
+	5. main  
+
