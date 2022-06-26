@@ -18,8 +18,21 @@
 |BLE <label>                         |   001     |   xx  |   100     |   #<8-bit address>            |   ++PC += (N^V | Z) ? #<8-bit immediate> : 0;
 
 
+## Development status
+main is implemented.
+assembleProgram needs to current address and label-map and pass them to assembleInstruction.
+assembleInstruction is in-progress.
+	1. Branches need to set the label address.
+	2. MOV needs to check for MOV-IMM or MOV-REG
+		2.1 Need to convert from "Rn" to binary
+		2.2 Need to convert from #<decimal number> to 8-bit immediate
+	3. ALU instructions need to be fully implemented.
+	4. Memory instructions are in-progress. 
+	5. HALT is implemented.
+	6. Creating new labels needs to be implemented.
 
-## Project status
+
+## Testing status
 Nothing has been tested yet.
 Function should be tested in the following order:
 	1. toUpper
