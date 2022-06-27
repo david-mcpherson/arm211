@@ -3,6 +3,7 @@
  * 
  * Author: david-mcpherson
  * Created: 2022-06-21
+ * Updated: 2022-06-27
  */
 
 
@@ -16,9 +17,22 @@
 #define ASCII_LETTER_PREFIX	96
 #define ASCII_LETTER_ID		31
 #define ALPHABET_LENGTH		26
+#define MAX_LINES		8192
 
-// TODO: store current address
-// TODO: map a list of labels to addresses
+
+/* We need a way to map labels to memory addresses. */
+struct LabelAddressPair {
+	char label[MAX_INSTRUC_LENGTH];
+	unsigned int address;
+};
+
+/* TODO: create a wrapper for the label-to-address map. */
+struct LabelMap {
+	struct LabelAddressPair[MAX_LINES] label_list;
+	// contains(char[] label);
+	// get(int label_num);
+};
+
 
 /*
  * Assembly to binary converter.
@@ -28,19 +42,13 @@
  * 
  * If there's a parse error, then error_number will be set to 1.
  */
-void assembleInstruction(char* binary, char* assembly, int* error_number) {
+void assembleInstruction(char* binary, char* assembly, int* error_number, struct LabelAddressPair label_map[], int* addr, int* instruc_num) {
 	normalizeInstruction(assembly);
 	strncpy(binary, ALL_ZERO, INSTRUCTION_LENGTH);
 
-	// 2. If first letter is B then call branch helper
-	// 3. If MOV then call helper
-	// 4. IF ADD or CMP or AND or MVN then call ALU helper
-	// 5. if LDR or STR call MEM helper
-	// 6. Throw ParseError 
-
-	if (!strncmp(assembly, "HALT", 4)) {
+	if (!strncmp(assembly, "HALT", 4)) {	// HALT
 		strncpy(binary, "111", 3);	
-	} else if (assembly[0] == 'B') {	// BRANCH 
+	} else if (assembly[0] == 'B') {		// BRANCH 
 		strncpy(binary, "001", 3);
 
 		/* Unconditional branch */		
@@ -68,6 +76,7 @@ void assembleInstruction(char* binary, char* assembly, int* error_number) {
 		// TODO: binary[7:0] = Rd + #<5-bit immediate>
 	} else if (assembly[-1] == ':') {						// CREATE LABEL
 		// check whether the label exists 
+				
 	} else {	
 		/* ParseError: No instruction found. */
 		*error_number = 1;
@@ -84,7 +93,14 @@ void assembleProgram(char* filename) {
 	const int n = strlen(filename);	
 	char* arm211_program = malloc(n + EXTENSION_LENGTH);
 	strncpy(arm212_program, filename, n);	
-	
+
+	/* When assembling, we need to turn labels into addresses.
+	 * This means we need to store the current address, and we need to
+	 * map labels to addresses. */
+	struct LabelAddressPair label_map[MAX_LINES];	
+	unsigned int current_address = 0;
+	unsigned int num_labels = 0;
+
 	/* This function reads from the input file, and outputs to an output file */
 	FILE* input_file = fopen(filename, "r");
 	FILE* output_file = fopen(arm211_program, "w"); 
@@ -116,7 +132,7 @@ void assembleProgram(char* filename) {
 	
 		/* Assemble the next instruction */	
 		next_instruction[letter_num] = '\0';
-		assembleInstruction(binary_instruction, next_instruction, &fail);
+		assembleInstruction(binary_instruction, next_instruction, &fail, label_map, &current_address, &num_labels);
 		
 		/* Throw an error if parsing failed */
 		if (fail) {
