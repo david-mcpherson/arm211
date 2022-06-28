@@ -1,5 +1,5 @@
 /*    
- * This file contains helper methods for the the arm211 compiler.
+ * This file contains helper methods for the the arm211 assembler.
  * 
  * Author: david-mcpherson
  * Created: 2022-06-21
