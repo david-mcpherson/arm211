@@ -8,47 +8,15 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h>
 
 #define EXTENSION_LENGTH 	8
-#define MAX_INSTRUC_LENGTH 	40 
 #define INSTUCTION_LENGTH	16
 #define ALL_ZERO			"0000000000000000"
 #define ASCII_LETTER_PREFIX	96
 #define ASCII_LETTER_ID		31
 #define ALPHABET_LENGTH		26
-#define MAX_LINES		8192
-
-
-/* We need a way to map labels to memory addresses. */
-struct LabelAddressPair {
-	char label[MAX_INSTRUC_LENGTH];
-	unsigned int address;
-};
-
-/* TODO: create a wrapper for the label-to-address map. */
-struct LabelMap {
-	struct LabelAddressPair[MAX_LINES] label_list;
-	unsigned int size;
-	void* contains(char* label);
-	void* getAddress(char* label);
-	void* addLabel(struct LabelAddressPair);
-};
-
-bool containsLabel(struct LabelMap label_map, char* label) {
-	for (int i = 0; i < LabelMap.size; i++)
-		if (!strcmp(label, label_map.label_list[i].label))
-			return true;
-	return false;
-}
-
-// TODO write getAddress and addLabel functions
-	
-struct LabelMap newLabelMap() {
-	struct LabelMap constructed_label_map;
-	constructed_label_map.contains = &containLabel;
-	// TODO set getAddress and addLabel functions
-}
 
 
 /*
@@ -59,41 +27,49 @@ struct LabelMap newLabelMap() {
  * 
  * If there's a parse error, then error_number will be set to 1.
  */
-void assembleInstruction(char* binary, char* assembly, int* error_number, struct LabelAddressPair label_map[], int* addr, int* instruc_num) {
+void assembleInstruction(char* binary, char* assembly, int* error_number, struct LabelMap* label_map, int* addr, int* instruc_num) {
 	normalizeInstruction(assembly);
 	strncpy(binary, ALL_ZERO, INSTRUCTION_LENGTH);
+	int possible_label_length;
 
 	if (!strncmp(assembly, "HALT", 4)) {	// HALT
 		strncpy(binary, "111", 3);	
 	} else if (assembly[0] == 'B') {		// BRANCH 
 		strncpy(binary, "001", 3);
+		char* label;
 
 		/* Unconditional branch */		
-		if (binary[1] == ' ')
+		if (binary[1] == ' ') {
 			strncpy(binary+5, "000", 3);
-	
-		/* Conditional branches */
-		else switch((int)assembly[1] * 26 + (int)assembly[2]) {
-			case (int)'E' * 26 + (int)'Q':	strncpy(binary+5, "001", 3); break; 	// BEQ	
-			case (int)'N' * 26 + (int)'E':	strncpy(binary+5, "010", 3); break; 	// BNE	
-			case (int)'L' * 26 + (int)'T':	strncpy(binary+5, "011", 3); break; 	// BLT	
-			case (int)'L' * 26 + (int)'E':	strncpy(binary+5, "100", 3); break; 	// BLE	
-			default: *error_number = 1; return;
+			label = assembly + 2;			// Unconditional branches have a 1-letter code and a space before the label	
 		}
-		// TODO: binary[7:0] = label_map.get(label_name)	
+		/* Conditional branches */
+		else { 
+			switch((int)assembly[1] * 26 + (int)assembly[2]) {
+ 				case (int)'E' * 26 + (int)'Q':	strncpy(binary+5, "001", 3); break; 	// BEQ	
+ 				case (int)'N' * 26 + (int)'E':	strncpy(binary+5, "010", 3); break; 	// BNE	
+ 				case (int)'L' * 26 + (int)'T':	strncpy(binary+5, "011", 3); break; 	// BLT	
+ 				case (int)'L' * 26 + (int)'E':	strncpy(binary+5, "100", 3); break; 	// BLE	
+ 				default: *error_number = 1; return;
+			};
+			label = assembly + 4;			// Conditional branches have a 3-letter code plus a space before the label
+		}
+		/* Need to turn the label into a binary address */
+		strncpy(binary+8, label_map->getAddress(assembly[2]);
 	} else if (assembly[0] == 'M' && assembly[1] == 'O' && assembly[2] == 'V') {	// MOV 
 		strncpy(binary, "110", 3);
 		
 		/* Need to check whether the instruction is MOV_IMM or MOV_REG*/
-		// if (toks[2][0] == 'R')
+		// TODO if (toks[2][0] == 'R') MOV_REG; else MOV_IMM;
+
 	} else if (assembly[0] == 'L' && assembly[1] == 'D' && assembly[2] == 'R'		// LDR/STR
 			|| assembly[0] == 'S' && assembly[1] == 'T' && assembly[2] == 'R') {
 		strncpy(binary, (assembly[0] == 'L') ? "011" : "100", 3);
 		// TODO: binary[10:8] = Rn
 		// TODO: binary[7:0] = Rd + #<5-bit immediate>
-	} else if (assembly[-1] == ':') {						// CREATE LABEL
-		// check whether the label exists 
-				
+
+	} else if (~(possible_label_length = labelLength(assembly)) {					// LABEL DECLARATION
+		assembly[possible_label_length] = '\0';	
 	} else {	
 		/* ParseError: No instruction found. */
 		*error_number = 1;

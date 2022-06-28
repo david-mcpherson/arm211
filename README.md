@@ -20,16 +20,14 @@
 
 ## Development status
 main is implemented.
-assembleProgram needs to current address and label-map and pass them to assembleInstruction.
+branches and labels are implemented.
 assembleInstruction is in-progress.
-	1. Branches need to set the label address.
-	2. MOV needs to check for MOV-IMM or MOV-REG
+	1. MOV needs to check for MOV-IMM or MOV-REG
 		2.1 Need to convert from "Rn" to binary
 		2.2 Need to convert from #<decimal number> to 8-bit immediate
-	3. ALU instructions need to be fully implemented.
-	4. Memory instructions are in-progress. 
-	5. HALT is implemented.
-	6. Creating new labels needs to be implemented.
+	2. ALU instructions need to be fully implemented.
+	3. Memory instructions are in-progress. 
+	4. HALT is implemented.
 
 
 ## Testing status

@@ -10,6 +10,10 @@
  */
 
 
+#define MAX_INSTRUC_LENGTH 	40 
+#define ADDRESS_SIZE		16
+#define MAX_LINES			65536	// 2 ** ADDRESS_SIZE
+
 #include "arm211_compiler.h"
 
 
