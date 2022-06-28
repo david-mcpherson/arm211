@@ -29,9 +29,26 @@ struct LabelAddressPair {
 /* TODO: create a wrapper for the label-to-address map. */
 struct LabelMap {
 	struct LabelAddressPair[MAX_LINES] label_list;
-	// contains(char[] label);
-	// get(int label_num);
+	unsigned int size;
+	void* contains(char* label);
+	void* getAddress(char* label);
+	void* addLabel(struct LabelAddressPair);
 };
+
+bool containsLabel(struct LabelMap label_map, char* label) {
+	for (int i = 0; i < LabelMap.size; i++)
+		if (!strcmp(label, label_map.label_list[i].label))
+			return true;
+	return false;
+}
+
+// TODO write getAddress and addLabel functions
+	
+struct LabelMap newLabelMap() {
+	struct LabelMap constructed_label_map;
+	constructed_label_map.contains = &containLabel;
+	// TODO set getAddress and addLabel functions
+}
 
 
 /*
@@ -97,7 +114,7 @@ void assembleProgram(char* filename) {
 	/* When assembling, we need to turn labels into addresses.
 	 * This means we need to store the current address, and we need to
 	 * map labels to addresses. */
-	struct LabelAddressPair label_map[MAX_LINES];	
+	struct LabelMap label_map;
 	unsigned int current_address = 0;
 	unsigned int num_labels = 0;
 
