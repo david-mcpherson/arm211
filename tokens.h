@@ -4,11 +4,15 @@
  * 
  * @param binary 
  * @param assembly 
- * @return true if the assembly is for MOV_REG
- * @return false if the assembly is for MOV_IMM
+ * @return true if the instruction is MOV_REG
+ * @return false if the instruction is MOV_IMM
  */
 bool movReg(char* binary, char* assembly) {
+    char* curr_letter = assembly;
+    while (*curr_letter != ',')
+        curr_letter++;
 
+    return *(++curr_letter) == 'R';
 }
 
 
