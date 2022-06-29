@@ -19,23 +19,22 @@
 
 
 ## Development status
-main is implemented.
-branches and labels are implemented.
-assembleInstruction is in-progress.
-	1. MOV needs to check for MOV-IMM or MOV-REG
-		2.1 Need to convert from "Rn" to binary
-		2.2 Need to convert from #<decimal number> to 8-bit immediate
-	2. ALU instructions need to be fully implemented.
-	3. Memory instructions are in-progress. 
-	4. HALT is implemented.
+main is done.
+assembleProgram is done.
+assembleInstruction is done.
+string-manipulation is done.
+
+TODO: finish tokens.h
 
 
 ## Testing status
 Nothing has been tested yet.
-Function should be tested in the following order:
-	1. toUpper
-	2. setExtension
-	3. assembleInstruction
-	4. assembleProgram
-	5. main  
+Files should be tested in the following order:
+	1. string-manip.h
+	2. tokens.h
+	3. label-structs.h
+	4. assembleInstruction
+    5. assembleProgram
+    6. main  
+
 
