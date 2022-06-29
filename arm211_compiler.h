@@ -11,6 +11,9 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#include "label_structs.h"
+#include "tokens.h"
+
 #define EXTENSION_LENGTH 	8
 #define INSTUCTION_LENGTH	16
 #define ALL_ZERO			"0000000000000000"
@@ -55,20 +58,31 @@ void assembleInstruction(char* binary, char* assembly, int* error_number, struct
 			label = assembly + 4;			// Conditional branches have a 3-letter code plus a space before the label
 		}
 		/* Need to turn the label into a binary address */
-		strncpy(binary+8, label_map->getAddress(assembly[2]);
+		strncpy(binary+8, label_map->getAddress(assembly[2]));
 	} else if (assembly[0] == 'M' && assembly[1] == 'O' && assembly[2] == 'V') {	// MOV 
 		strncpy(binary, "110", 3);
-		
-		/* Need to check whether the instruction is MOV_IMM or MOV_REG*/
-		// TODO if (toks[2][0] == 'R') MOV_REG; else MOV_IMM;
+		setRn(binary, assembly);
 
+		/* Need to check whether the instruction is MOV_IMM or MOV_REG*/
+		if (movReg(assembly)) {				// MOV_REG
+			strncpy(binary + 3, "10", 2);
+			setImmediate(binary, assembly);
+		} else {							// MOV_IMM
+			strncpy(binary + 3, "00", 2);
+			setRdShiftRm(binary, assembly);
+		}
+
+	} else if (!strncmp(assembly, "ADD", 3) || !strncmp(assembly, "CMP", 3) || !strncmp(assembly, "ADD", 3) || !strncmp(assembly, "MVN", 3)) {
+		strncpy(binary, "101", 3);
+		setOP(binary, assembly);
+		setRn(binary, assembly);
+		setRdShiftRm(binary, assembly);
 	} else if (assembly[0] == 'L' && assembly[1] == 'D' && assembly[2] == 'R'		// LDR/STR
 			|| assembly[0] == 'S' && assembly[1] == 'T' && assembly[2] == 'R') {
 		strncpy(binary, (assembly[0] == 'L') ? "011" : "100", 3);
-		// TODO: binary[10:8] = Rn
-		// TODO: binary[7:0] = Rd + #<5-bit immediate>
-
-	} else if (~(possible_label_length = labelLength(assembly)) {					// LABEL DECLARATION
+		setRn(binary, assembly);
+		setMemAddress(binary, assembly);
+	} else if (~(possible_label_length = labelLength(assembly))) {					// LABEL DECLARATION
 		assembly[possible_label_length] = '\0';	
 	} else {	
 		/* ParseError: No instruction found. */
