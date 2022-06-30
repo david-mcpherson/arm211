@@ -1,5 +1,10 @@
 #include <string.h>
 
+#define NO_SHIFT "00"
+#define LSL "01"
+#define LSR "10"
+#define ASR "11"
+
 
 /**
  * @brief Determines whether the move function is 
@@ -87,6 +92,14 @@ void setImmediate(char* binary, char* assembly) {
  */
 void setRdShiftRm(char* binary, char* assembly) {
     // TODO: implement this method.
+    // sample instruction: MOV R2,R1,R3,LSL#1
+    //
+    // if this is a CMP instruction then set Rd to "000".
+    // else set Rd to the first argument.
+    //
+    // set Rm to the arg after the comma
+    //
+    // check for a shift operation
 }
 
 
