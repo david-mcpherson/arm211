@@ -92,13 +92,14 @@ void setImmediate(char* binary, char* assembly) {
  */
 void setRdShiftRm(char* binary, char* assembly) {
     // TODO: implement this method.
-	// first need to set Rd
-	// 		if this is a CMP instruction then Rd should be "000"
-	// 		else Rd should be the first arg
-	// then we can set Rm
-	// 		this is the first arg after the comma
-	// finally we set shift
-	// 		
+    // sample instruction: MOV R2,R1,R3,LSL#1
+    //
+    // if this is a CMP instruction then set Rd to "000".
+    // else set Rd to the first argument.
+    //
+    // set Rm to the arg after the comma
+    //
+    // check for a shift operation
 }
 
 
