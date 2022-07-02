@@ -25,21 +25,21 @@ bool movReg(char* binary, char* assembly) {
 
 
 /**
- * @brief Set the Rn field of a binary instruction.
+ * @brief Set a reg field of a binary instruction.
  * 
- * @param binary 
- * @param assembly 
+ * @param binary points to the MSB of the binary reg 
+ * @param reg is a single char containing a digit 
  */
-void setRn(char* binary, char* assembly) {
-    switch (assembly[5]) {
-        case '0': strncpy(binary + 5, "000", 3); break;
-        case '1': strncpy(binary + 5, "001", 3); break;
-        case '2': strncpy(binary + 5, "010", 3); break;
-        case '3': strncpy(binary + 5, "011", 3); break;
-        case '4': strncpy(binary + 5, "100", 3); break;
-        case '5': strncpy(binary + 5, "101", 3); break;
-        case '6': strncpy(binary + 5, "110", 3); break;
-        case '7': strncpy(binary + 5, "111", 3); break;
+void setReg(char* binary, char reg) {
+    switch (reg) {
+        case '0': strncpy(binary, "000", 3); break;
+        case '1': strncpy(binary, "001", 3); break;
+        case '2': strncpy(binary, "010", 3); break;
+        case '3': strncpy(binary, "011", 3); break;
+        case '4': strncpy(binary, "100", 3); break;
+        case '5': strncpy(binary, "101", 3); break;
+        case '6': strncpy(binary, "110", 3); break;
+        case '7': strncpy(binary, "111", 3); break;
         default: fprintf(stderr, "ERROR: The CPEN 211 ISA only supports registers R0-R7!\n");
     };
 }
@@ -85,6 +85,30 @@ void setImmediate(char* binary, char* assembly) {
 
 
 /**
+ * @brief Sets the shift bits. If the shift argument is invalid
+ * then NO_SHIFT is set.
+ * 
+ * @param binary start of the binary instruction
+ * @param shift_arg points to the start of the shift argument
+ * 
+ * TODO: implement error checking
+ */
+void setShift(char* binary, char* shift_arg) {
+    char shift_encoding[2];
+    
+    if (shift_arg[0] == 'L' && shift_arg[2] == 'L') {
+        strncmp(shift_encoding, LSL, 2);
+    } else if (shift_arg[0] = 'L' && shift_arg == 'R') {
+        strncmp(shift_encoding, LSR, 2);
+    } else if (shift_arg[0] = 'A' && shift_arg == 'R') {
+        strncmp(shift_encoding, ASR, 2);
+    } else { 
+        strncmp(shift_encoding, NO_SHIFT, 2)
+    }
+}
+
+
+/**
  * @brief Sets the Rd, shift and Rm fields of an instruction.
  * 
  * @param binary 
@@ -93,13 +117,17 @@ void setImmediate(char* binary, char* assembly) {
 void setRdShiftRm(char* binary, char* assembly) {
     // TODO: implement this method.
     // sample instruction: MOV R2,R1,R3,LSL#1
-    //
-    // if this is a CMP instruction then set Rd to "000".
-    // else set Rd to the first argument.
-    //
-    // set Rm to the arg after the comma
-    //
-    // check for a shift operation
+
+    if (assembly[0] == 'C') {
+        setReg(binary + RN_OFFSET, assembly[ARG1];  // set Rn
+        setReg(binary + RM_OFFSET, assembly[ARG2];  // set Rm
+        
+    } else {
+        setReg(binary + RD_OFFSET, assembly[ARG1];  // set Rd
+        setReg(binary + RN_OFFSET, assembly[ARG2];  // set Rn
+        setReg(binary + RM_OFFSET, assembly[ARG3];  // set Rm
+        setShift(binary, assembly + ARG4); 
+    }
 }
 
 
@@ -112,3 +140,4 @@ void setRdShiftRm(char* binary, char* assembly) {
 void setMemAddress(char* binary, char* assembly) {
     // TODO: implement this method.
 }
+
