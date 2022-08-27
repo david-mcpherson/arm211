@@ -15,7 +15,7 @@
 |BEQ <label>                         |   001     |   xx  |   001     |   #<8-bit address>            |   ++PC += (Z)       ? #<8-bit immediate> : 0;
 |BNE <label>                         |   001     |   xx  |   010     |   #<8-bit address>            |   ++PC += (~Z)      ? #<8-bit immediate> : 0;
 |BLT <label>                         |   001     |   xx  |   011     |   #<8-bit address>            |   ++PC += (N^V)     ? #<8-bit immediate> : 0;
-|BLE <label>                         |   001     |   xx  |   100     |   #<8-bit address>            |   ++PC += (N^V | Z) ? #<8-bit immediate> : 0;
+|BLE <label>                         |   001     |   xx  |   100     |   #<8-bit address>            |   ++PC += (N^V &#124; Z) ? #<8-bit immediate> : 0;
 
 ## Project status
 This project has been abandoned. Its purpose was to design a faster version of the functioning CPU I made in school.
