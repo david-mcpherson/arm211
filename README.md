@@ -17,6 +17,12 @@
 |BLT <label>                         |   001     |   xx  |   011     |   #<8-bit address>            |   ++PC += (N^V)     ? #<8-bit immediate> : 0;
 |BLE <label>                         |   001     |   xx  |   100     |   #<8-bit address>            |   ++PC += (N^V | Z) ? #<8-bit immediate> : 0;
 
+## Project status
+This project has been abandoned. Its purpose was to design a faster version of the functioning CPU I made in school.
+See the functioning implementation here: https://github.com/david-mcpherson/David-Programming-Projects/tree/main/verilog%20computer
+
+
+
 
 ## Development status
 main is done.
